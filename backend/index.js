@@ -16,12 +16,30 @@ let app = express()
 
 app.use(express.json())
 app.use(cookieParser())
+const allowedOrigins = [
+  "https://ecommerce-website-ai-support-frontend.onrender.com",
+  "https://ecommerce-website-ai-support-admin.onrender.com",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "http://localhost:5176",
+  "https://e-com-1-pqnl.onrender.com",
+  "https://e-com-mtf6.onrender.com",
+  "https://e-com-2-561c.onrender.com"
+]
+
 app.use(cors({
- origin:["https://ecommerce-website-ai-support-frontend.onrender.com" , "https://ecommerce-website-ai-support-admin.onrender.com", "http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176"],
- credentials:true
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error(`CORS policy does not allow access from ${origin}`))
+    }
+  },
+  credentials: true
 }))
 
-app.use("/api/auth",authRoutes)
+app.use("/api/auth", authRoutes)
 app.use("/api/user",userRoutes)
 app.use("/api/product",productRoutes)
 app.use("/api/cart",cartRoutes)
