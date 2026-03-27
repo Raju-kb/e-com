@@ -38,7 +38,7 @@ function Registration() {
         },
         { withCredentials: true }
       );
-      getCurrentUser();
+      await getCurrentUser();
       navigate("/");
       toast.success("User Registration Successful");
       console.log(result.data);

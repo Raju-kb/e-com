@@ -37,8 +37,8 @@ function Login() {
         { withCredentials: true }
       );
       console.log(result.data);
+      await getCurrentUser();
       setLoading(false);
-      getCurrentUser();
       navigate("/");
       toast.success("User Login Successful");
     } catch (error) {

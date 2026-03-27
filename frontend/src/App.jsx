@@ -17,13 +17,21 @@ import { ToastContainer } from 'react-toastify';
 import NotFound from './pages/NotFound'
 import Ai from './component/Ai'
 function App() {
-let {userData} = useContext(userDataContext)
-let location = useLocation()
-  
+  let {userData, isFetching} = useContext(userDataContext)
+  let location = useLocation()
+
+  if (isFetching) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center text-white">
+        Checking authentication...
+      </div>
+    )
+  }
+
   return (
     <>
-    <ToastContainer />
-    {userData && <Nav/>}
+      <ToastContainer />
+      {userData && <Nav/>}
       <Routes>
 
         <Route path='/login' 

@@ -1,43 +1,41 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { authDataContext } from './AuthContext'
 import axios from 'axios'
 
 export const userDataContext = createContext()
 function UserContext({children}) {
-    let [userData,setUserData] = useState("")
+    let [userData,setUserData] = useState(null)
+    let [isFetching,setIsFetching] = useState(true)
     let {serverUrl} = useContext(authDataContext)
 
-
-   const getCurrentUser = async () => {
+   const getCurrentUser = useCallback(async () => {
+        setIsFetching(true)
         try {
-            let result = await axios.get(serverUrl + "/api/user/getcurrentuser",{withCredentials:true})
-
+            let result = await axios.get(serverUrl + "/api/user/getcurrentuser", { withCredentials: true })
             setUserData(result.data)
-            console.log(result.data)
-
+            console.log('getCurrentUser:', result.data)
+            return result.data
         } catch (error) {
             setUserData(null)
-            console.log(error)
+            console.log('getCurrentUser error:', error?.response?.data?.message || error)
+            return null
+        } finally {
+            setIsFetching(false)
         }
-    }
+    }, [serverUrl])
 
     useEffect(()=>{
      getCurrentUser()
-    },[])
-
-
+    },[getCurrentUser])
 
     let value = {
-     userData,setUserData,getCurrentUser
+     userData, setUserData, getCurrentUser, isFetching
     }
-    
-   
+
   return (
-    <div>
       <userDataContext.Provider value={value}>
         {children}
       </userDataContext.Provider>
-    </div>
   )
 }
 
