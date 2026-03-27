@@ -1,0 +1,24 @@
+import React from 'react'
+import { createContext } from 'react'
+export const authDataContext= createContext()
+function AuthContext({children}) {
+    // Change this to your local backend URL during development
+    let serverUrl = "http://localhost:4000"
+    // For production, use: "https://ecommerce-website-ai-support-backend.onrender.com"
+
+    let value = {
+       serverUrl
+    }
+  return (
+
+    
+    <div>
+        <authDataContext.Provider value={value}>
+            {children}
+        </authDataContext.Provider>
+      
+    </div>
+  )
+}
+
+export default AuthContext
