@@ -43,7 +43,9 @@ function Login() {
       toast.success("User Login Successful");
     } catch (error) {
       console.log(error);
-      toast.error("User Login Failed");
+      const errMsg = error?.response?.data?.message || "User Login Failed";
+      toast.error(errMsg);
+      setLoading(false);
     }
   };
   const googlelogin = async () => {

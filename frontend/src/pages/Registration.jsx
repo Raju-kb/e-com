@@ -45,7 +45,9 @@ function Registration() {
       setLoading(false);
     } catch (error) {
       console.log(error);
-      toast.error("User Registration Failed");
+      const errMsg = error?.response?.data?.message || "User Registration Failed";
+      toast.error(errMsg);
+      setLoading(false);
     }
   };
 

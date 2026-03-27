@@ -21,16 +21,17 @@ export const registration = async (req,res) => {
 
     const user = await User.create({name,email,password:hashPassword})
     let token = await genToken(user._id)
-    res.cookie("token",token,{
-        httpOnly:true,
-        secure:true,
-        sameSite: "none",
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
-    return res.status(201).json(user)
+    const safeUser = { _id: user._id, name: user.name, email: user.email, cartData: user.cartData }
+    return res.status(201).json(safeUser)
   } catch (error) {
-    console.log("registration error")
-    return res.status(500).json({message:`registration error ${error}`})
+    console.log("registration error", error)
+    return res.status(500).json({ message: error?.message || "Registration error" })
   }
     
 }
@@ -48,18 +49,18 @@ export const login = async (req,res) => {
             return res.status(400).json({message:"Incorrect password"})
         }
         let token = await genToken(user._id)
-        res.cookie("token",token,{
-        httpOnly:true,
-        secure:true,
-        sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000
-    })
-    return res.status(201).json(user)
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        })
+        const safeUser = { _id: user._id, name: user.name, email: user.email, cartData: user.cartData }
+        return res.status(200).json(safeUser)
 
     } catch (error) {
-         console.log("login error")
-    return res.status(500).json({message:`Login error ${error}`})
-        
+        console.log("login error", error)
+        return res.status(500).json({ message: error?.message || "Login error" })
     }
     
 }
@@ -107,15 +108,15 @@ export const adminLogin = async (req,res) => {
         let {email , password} = req.body
         if(email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD){
         let token = await genToken1(email)
-        res.cookie("token",token,{
-        httpOnly:true,
-        secure:true,
-        sameSite: "none",
-        maxAge: 1 * 24 * 60 * 60 * 1000
-    })
-    return res.status(200).json(token)
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 1 * 24 * 60 * 60 * 1000
+        })
+        return res.status(200).json({ message: "Admin login successful" })
         }
-        return res.status(400).json({message:"Invaild creadintials"})
+        return res.status(400).json({ message: "Invalid credentials" })
 
     } catch (error) {
         console.log("AdminLogin error")
